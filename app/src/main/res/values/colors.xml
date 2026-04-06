@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <color name="masada_musteri_yok">#4CAF50</color>
+
+    <color name="masa_musteriVar_sari">#FFEB3B</color>
+
+    <color name="masa_dolu_kırmızı">#971515</color>
+</resources>

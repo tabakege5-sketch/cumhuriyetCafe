@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/masalarFragment"
+        android:icon="@drawable/masa_recycler_view"
+        android:title="Masalar" />
+    <item
+        android:id="@+id/ciroRaporFragment"
+        android:icon="@drawable/turk_para_recycler_view"
+        android:title="Ciro" />
+    <item
+        android:id="@+id/ayarlarFragment"
+        android:icon="@drawable/ayar_recycler_view"
+        android:title="Ayarlar" />
+</menu>

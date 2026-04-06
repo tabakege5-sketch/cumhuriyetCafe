@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/naw_graph"
+    app:startDestination="@id/girisFragment">
+
+    <fragment
+        android:id="@+id/girisFragment"
+        android:name="com.example.cumhuriyetcafe.view.girisFragment"
+        android:label="Giriş"
+        tools:layout="@layout/fragment_giris" >
+        <action
+            android:id="@+id/action_girisFragment_to_masalarFragment"
+            app:destination="@id/masalarFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/masalarFragment"
+        android:name="com.example.cumhuriyetcafe.view.masalarFragment"
+        android:label="Masalar"
+        tools:layout="@layout/fragment_masalar" >
+        <action
+            android:id="@+id/action_masalarFragment_to_menulerFragment"
+            app:destination="@id/menulerFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/menulerFragment"
+        android:name="com.example.cumhuriyetcafe.view.menulerFragment"
+        android:label="Sipariş Menüsü"
+        tools:layout="@layout/fragment_menuler" >
+
+        <argument
+            android:name="secilenMasaId"
+            app:argType="string"
+            android:defaultValue="Masa1" />
+
+        <action
+            android:id="@+id/action_menulerFragment_to_masalarFragment"
+            app:destination="@id/masalarFragment"
+            app:popUpTo="@id/masalarFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_menulerFragment_to_ciroRaporFragment"
+            app:destination="@id/ciroRaporFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/ciroRaporFragment"
+        android:name="com.example.cumhuriyetcafe.view.ciroRaporFragment"
+        android:label="fragment_ciro_rapor"
+        tools:layout="@layout/fragment_ciro_rapor" >
+        <action
+            android:id="@+id/action_ciroRaporFragment_to_masalarFragment"
+            app:destination="@id/masalarFragment" />
+    </fragment>
+
+</navigation>

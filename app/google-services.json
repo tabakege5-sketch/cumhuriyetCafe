@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "50692335386",
+    "firebase_url": "https://cumhuriyetcafe-fb26c-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "cumhuriyetcafe-fb26c",
+    "storage_bucket": "cumhuriyetcafe-fb26c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:50692335386:android:78a4d0c2cdcd820573eea3",
+        "android_client_info": {
+          "package_name": "com.example.cumhuriyetcafe"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "50692335386-jhcomc3ovdinkuijv06d27uefr2t1jqe.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.cumhuriyetcafe",
+            "certificate_hash": "2ef71377121711cf09465b93ee5ec565aa5edd69"
+          }
+        },
+        {
+          "client_id": "50692335386-kber6ueb97j8dh8si0kltfna11r4pj2u.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDt0ToB7X_ku9L7guFFjdXbcNnSjWR8xNY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "50692335386-kber6ueb97j8dh8si0kltfna11r4pj2u.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
