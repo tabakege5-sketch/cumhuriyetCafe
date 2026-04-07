@@ -153,7 +153,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="İŞLEM TAMAMLANDI ✅"
+            android:text="İŞLEM TAMAMLANDI"
             android:textColor="#3CB63F"
             android:textSize="30sp"
             android:textStyle="bold" />
