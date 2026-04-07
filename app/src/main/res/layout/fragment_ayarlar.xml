@@ -3,6 +3,115 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:background="#9FA8AD"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".view.ayarlarFragment"/>
+    android:layout_height="match_parent">
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/ayarlarTextView"
+        android:layout_width="320dp"
+        android:layout_height="50dp"
+        android:layout_margin="22dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:background="#9FA8AD"
+        tools:ignore="MissingConstraints">
+
+        <androidx.appcompat.widget.SearchView
+            android:id="@+id/ayarlarSearchView"
+            android:layout_width="320dp"
+            android:layout_height="match_parent"
+            android:background="#9FA8AD"
+            app:iconifiedByDefault="false"
+            app:queryHint="Ayarlarda Arayınız...">
+        </androidx.appcompat.widget.SearchView>
+    </com.google.android.material.card.MaterialCardView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="25dp"
+        android:orientation="vertical"
+        android:paddingHorizontal="15dp"
+        app:layout_constraintBottom_toTopOf="@id/buttonCikisYap"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/ayarlarTextView">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:text="Hareketlerin"
+            android:textSize="22sp" />
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="12dp"
+            app:strokeWidth="1dp">
+        </com.google.android.material.card.MaterialCardView>
+
+        <TextView
+            android:id="@+id/uygulamaTercihleriTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="8dp"
+            android:text="Uygulama Tercihleri:"
+            android:textSize="22sp" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/buttonBildirimler"
+            android:layout_width="match_parent"
+            android:layout_height="55dp">
+
+            <TextView
+                android:id="@+id/bildirimAyarlarıTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Bildirim Ayarları:"
+                android:textSize="22sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/bildirimAyarlarıConstraintLayout"
+            android:layout_width="match_parent"
+            android:layout_height="55dp">
+
+            <TextView
+                android:id="@+id/koyuModTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Karanlık Mod"
+                android:textSize="22sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+            <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/acKapat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/buttonCikisYap"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:layout_margin="26dp"
+        android:backgroundTint="@color/masa_dolu_kırmızı"
+        android:text="ÇIKIŞ YAP"
+        android:textColor="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

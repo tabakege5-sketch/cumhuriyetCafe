@@ -25,4 +25,5 @@ class ayarlarFragment : Fragment() {
     ): View? {
         return inflater.inflate(R.layout.fragment_ayarlar, container, false)
     }
+
 }
