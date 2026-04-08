@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/naw_graph"
-    app:startDestination="@id/ayarlarFragment2">
+    app:startDestination="@id/girisFragment">
 
     <fragment
         android:id="@+id/girisFragment"
@@ -30,12 +30,10 @@
         android:name="com.example.cumhuriyetcafe.view.menulerFragment"
         android:label="Sipariş Menüsü"
         tools:layout="@layout/fragment_menuler" >
-
         <argument
             android:name="secilenMasaId"
             app:argType="string"
             android:defaultValue="Masa1" />
-
         <action
             android:id="@+id/action_menulerFragment_to_masalarFragment"
             app:destination="@id/masalarFragment"
@@ -55,17 +53,21 @@
             android:id="@+id/action_ciroRaporFragment_to_masalarFragment"
             app:destination="@id/masalarFragment" />
         <action
-            android:id="@+id/action_ciroRaporFragment_to_ayarlarFragment2"
-            app:destination="@id/ayarlarFragment2" />
+            android:id="@+id/action_ciroRaporFragment_to_ayarlarFragment"
+            app:destination="@id/ayarlarFragment" />
     </fragment>
+
     <fragment
-        android:id="@+id/ayarlarFragment2"
+        android:id="@+id/ayarlarFragment"
         android:name="com.example.cumhuriyetcafe.view.ayarlarFragment"
         android:label="fragment_ayarlar"
         tools:layout="@layout/fragment_ayarlar" >
+
         <action
-            android:id="@+id/action_ayarlarFragment2_to_girisFragment"
-            app:destination="@id/girisFragment" />
+            android:id="@+id/action_ayarlarFragment_to_girisFragment"
+            app:destination="@id/girisFragment"
+            app:popUpTo="@id/naw_graph"
+            app:popUpToInclusive="true" />
     </fragment>
 
 </navigation>

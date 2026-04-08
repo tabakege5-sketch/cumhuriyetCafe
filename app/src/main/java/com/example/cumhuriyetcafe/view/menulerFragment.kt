@@ -17,8 +17,8 @@ import com.example.cumhuriyetcafe.databinding.FragmentMenulerBinding
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.database.FirebaseDatabase
+import java.text.SimpleDateFormat
 import java.util.*
-
 class menulerFragment : Fragment() {
     private var _binding: FragmentMenulerBinding? = null
     private val binding get() = _binding!!
@@ -29,30 +29,24 @@ class menulerFragment : Fragment() {
     private var siparisAdetListener: ListenerRegistration? = null
     private lateinit var katAdapter: kategoriAdapter
     private lateinit var mAdapter: menuAdapter
-
+    private val rtDbUrl = "https://cumhuriyetcafe-fb26c-default-rtdb.europe-west1.firebasedatabase.app"
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentMenulerBinding.inflate(inflater, container, false)
         return binding.root
     }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         db = FirebaseFirestore.getInstance()
         aktifMasaAdi = arguments?.getString("secilenMasaId") ?: "Masa1"
         binding.textViewMasaAdi.text = "Masa: $aktifMasaAdi"
-
         setupRecyclerViews()
         verileriYukle()
         siparislerVeToplamTakibi()
-
         binding.buttonGeri.setOnClickListener { findNavController().navigateUp() }
-
-        // SİPARİŞİ KAYDET
         binding.siparisiKaydetButton.setOnClickListener {
             db.collection("AktifSiparisler").document(aktifMasaAdi).collection("Siparisler").get().addOnSuccessListener { snapshot ->
                 if (!snapshot.isEmpty) {
-                    FirebaseDatabase.getInstance().reference.child("Masalar").child(aktifMasaAdi).setValue(true)
+                    FirebaseDatabase.getInstance(rtDbUrl).reference.child("Masalar").child(aktifMasaAdi).setValue(true)
                     Toast.makeText(requireContext(), "Sipariş Kaydedildi!", Toast.LENGTH_SHORT).show()
                     findNavController().popBackStack()
                 } else {
@@ -60,51 +54,62 @@ class menulerFragment : Fragment() {
                 }
             }
         }
-
-        // ÖDEME AL (Açık kapatılmış ve görselleştirilmiş hali)
         binding.buttonOdemeYap.setOnClickListener {
-            // 1. Ödeme yöntemi seçili mi?
             if (!binding.Nakit.isChecked && !binding.Kart.isChecked) {
                 Toast.makeText(requireContext(), "Lütfen ödeme türü seçiniz!", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-
-            // 2. Masada gerçekten ürün var mı?
             db.collection("AktifSiparisler").document(aktifMasaAdi).collection("Siparisler").get().addOnSuccessListener { snapshot ->
                 if (snapshot.isEmpty) {
                     Toast.makeText(requireContext(), "Ödenecek ürün bulunamadı!", Toast.LENGTH_SHORT).show()
                     return@addOnSuccessListener
                 }
-
-                // Masada ürün varsa temizleme işlemine başla
-                val batch = db.batch()
-                snapshot.forEach { batch.delete(it.reference) }
-
-                batch.commit().addOnSuccessListener {
-                    // Masayı boşalt (Yeşil yap)
-                    FirebaseDatabase.getInstance().reference.child("Masalar").child(aktifMasaAdi).removeValue()
-
-                    // Görsel "Başarı" Katmanını Göster
-                    binding.basariliEkran.visibility = View.VISIBLE
-
-                    // Arkadaki her şeyi gizle (Yeni sayfa efekti)
-                    binding.topBar.visibility = View.GONE
-                    binding.kontrolPaneli.visibility = View.GONE
-                    binding.Menu.visibility = View.GONE
-                    binding.kategoriler.visibility = View.GONE
-                    binding.siparisiKaydetButton.visibility = View.GONE
-
-                    // 2 saniye sonra Masalar ekranına dön
-                    Handler(Looper.getMainLooper()).postDelayed({
-                        if (_binding != null) {
-                            findNavController().popBackStack()
-                        }
-                    }, 2000)
+                var toplamTutar = 0.0
+                val urunIsimListesi = mutableListOf<String>()
+                snapshot.forEach { doc ->
+                    val fiyat = doc.getDouble("fiyat") ?: 0.0
+                    val ad = doc.getString("urunAdi") ?: "Bilinmeyen"
+                    toplamTutar += fiyat
+                    urunIsimListesi.add(ad)
+                }
+                val gruplanmisMap = urunIsimListesi.groupingBy { it }.eachCount()
+                val urunOzetMetni = gruplanmisMap.entries.joinToString(", ") { "${it.value}x ${it.key}" }
+                val sdf = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
+                val tarih = sdf.format(Date())
+                val odemeYontemi = if (binding.Nakit.isChecked) "Nakit" else "Kart"
+                val ciroRef = FirebaseDatabase.getInstance(rtDbUrl).getReference("ciro_kayitlari").push()
+                val yeniKayit = ciroKayit(
+                    firebaseId = ciroRef.key ?: "",
+                    tarih = tarih,
+                    gelir = toplamTutar,
+                    gider = 0.0,
+                    gunlukCiro = toplamTutar,
+                    aciklama = "$aktifMasaAdi - $odemeYontemi | $urunOzetMetni"
+                )
+                ciroRef.setValue(yeniKayit).addOnSuccessListener {
+                    val batch = db.batch()
+                    snapshot.forEach { batch.delete(it.reference) }
+                    batch.commit().addOnSuccessListener {
+                        FirebaseDatabase.getInstance(rtDbUrl).reference.child("Masalar").child(aktifMasaAdi).removeValue()
+                        gizleAnaArayuz()
+                        binding.basariliEkran.visibility = View.VISIBLE
+                        Handler(Looper.getMainLooper()).postDelayed({
+                            if (_binding != null) findNavController().popBackStack()
+                        }, 2500)
+                    }
+                }.addOnFailureListener {
+                    Toast.makeText(requireContext(), "Hata: ${it.message}", Toast.LENGTH_LONG).show()
                 }
             }
         }
     }
-
+    private fun gizleAnaArayuz() {
+        binding.topBar.visibility = View.GONE
+        binding.kontrolPaneli.visibility = View.GONE
+        binding.Menu.visibility = View.GONE
+        binding.kategoriler.visibility = View.GONE
+        binding.siparisiKaydetButton.visibility = View.GONE
+    }
     private fun setupRecyclerViews() {
         katAdapter = kategoriAdapter(kategoriListesi) { secilen -> urunleriFiltrele(secilen.isim) }
         binding.kategoriler.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
@@ -116,7 +121,6 @@ class menulerFragment : Fragment() {
         binding.Menu.layoutManager = LinearLayoutManager(requireContext())
         binding.Menu.adapter = mAdapter
     }
-
     private fun verileriYukle() {
         db.collection("urunler").get().addOnSuccessListener { snapshot ->
             tumUrunlerYedek.clear()
@@ -133,7 +137,6 @@ class menulerFragment : Fragment() {
             else mAdapter.updateList(tumUrunlerYedek)
         }
     }
-
     private fun urunleriFiltrele(kategoriAdi: String?) {
         if (kategoriAdi == null) return
         val trLocale = Locale("tr", "TR")
@@ -142,7 +145,6 @@ class menulerFragment : Fragment() {
         }
         mAdapter.updateList(filtrelenmis)
     }
-
     private fun siparislerVeToplamTakibi() {
         siparisAdetListener = db.collection("AktifSiparisler").document(aktifMasaAdi)
             .collection("Siparisler").addSnapshotListener { snapshot, _ ->
@@ -159,19 +161,16 @@ class menulerFragment : Fragment() {
                 mAdapter.updateAdetler(adetMap)
             }
     }
-
     private fun siparisEkle(u: urunler) {
         val veri = hashMapOf("urunAdi" to u.urunAdi, "fiyat" to u.fiyat, "tarih" to com.google.firebase.Timestamp.now())
         db.collection("AktifSiparisler").document(aktifMasaAdi).collection("Siparisler").add(veri)
     }
-
     private fun siparisSil(u: urunler) {
         db.collection("AktifSiparisler").document(aktifMasaAdi).collection("Siparisler")
             .whereEqualTo("urunAdi", u.urunAdi).limit(1).get().addOnSuccessListener { s ->
                 if (!s.isEmpty) s.documents[0].reference.delete()
             }
     }
-
     override fun onDestroyView() {
         siparisAdetListener?.remove()
         _binding = null

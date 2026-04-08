@@ -13,6 +13,7 @@
         android:layout_marginTop="20dp"
         android:text="Raporlar:"
         android:textSize="22sp"
+        android:textColor="?android:attr/textColorPrimary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -48,6 +49,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Günlük Gelir: 0.00 TL"
+                android:textColor="?android:attr/textColorPrimary"
                 android:textSize="18sp" />
 
             <TextView
@@ -56,6 +58,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:text="Günlük Gider: 0.00 TL"
+                android:textColor="?android:attr/textColorPrimary"
                 android:textSize="18sp" />
         </LinearLayout>
     </FrameLayout>
@@ -91,6 +94,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Günlük Ciro: 0.00 TL"
+                android:textColor="?android:attr/textColorPrimary"
                 android:textSize="18sp" />
 
             <TextView
@@ -99,6 +103,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:text="Toplam Ciro: 0.00 TL"
+                android:textColor="?android:attr/textColorPrimary"
                 android:textSize="18sp" />
         </LinearLayout>
     </FrameLayout>
@@ -109,6 +114,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
         android:text="Kalan Para 0.00 TL"
+        android:textColor="?android:attr/textColorPrimary"
         android:textSize="26sp"
         app:layout_constraintTop_toBottomOf="@+id/ciroHesaplamaLayout"
         app:layout_constraintStart_toStartOf="parent"

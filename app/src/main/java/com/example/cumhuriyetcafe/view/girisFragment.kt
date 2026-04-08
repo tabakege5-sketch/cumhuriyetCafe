@@ -1,5 +1,6 @@
 package com.example.cumhuriyetcafe.view
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -30,6 +31,7 @@ class girisFragment : Fragment() {
             val credential = GoogleAuthProvider.getCredential(account.idToken!!, null)
             auth.signInWithCredential(credential).addOnCompleteListener { task ->
                 if (task.isSuccessful) {
+                    saveLoginStatus()
                     masalaraGit()
                 } else {
                     Toast.makeText(requireContext(), "Firebase Bağlantı Hatası: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
@@ -69,6 +71,7 @@ class girisFragment : Fragment() {
                 auth.signInWithEmailAndPassword(email, sifre)
                     .addOnCompleteListener { task ->
                         if (task.isSuccessful) {
+                            saveLoginStatus()
                             masalaraGit()
                         } else {
                             kayitOl(email, sifre)
@@ -88,11 +91,16 @@ class girisFragment : Fragment() {
     private fun kayitOl(email: String, sifre: String) {
         auth.createUserWithEmailAndPassword(email, sifre).addOnCompleteListener { task ->
             if (task.isSuccessful) {
+                saveLoginStatus()
                 masalaraGit()
             } else {
                 Toast.makeText(requireContext(), "Hata: ${task.exception?.message}", Toast.LENGTH_LONG).show()
             }
         }
+    }
+    private fun saveLoginStatus() {
+        val sharedPref = requireActivity().getSharedPreferences("TemaAyari", Context.MODE_PRIVATE)
+        sharedPref.edit().putBoolean("isLoggedIn", true).apply()
     }
 
     private fun masalaraGit() {

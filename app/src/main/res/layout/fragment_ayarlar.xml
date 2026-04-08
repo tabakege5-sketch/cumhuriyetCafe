@@ -2,8 +2,6 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:background="#9FA8AD"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -11,21 +9,17 @@
         android:id="@+id/ayarlarTextView"
         android:layout_width="320dp"
         android:layout_height="50dp"
-        android:layout_margin="22dp"
+        android:layout_margin="25dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:background="#9FA8AD"
-        tools:ignore="MissingConstraints">
+        app:layout_constraintTop_toTopOf="parent">
 
         <androidx.appcompat.widget.SearchView
             android:id="@+id/ayarlarSearchView"
-            android:layout_width="320dp"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="#9FA8AD"
             app:iconifiedByDefault="false"
-            app:queryHint="Ayarlarda Arayınız...">
-        </androidx.appcompat.widget.SearchView>
+            app:queryHint="Ayarlarda Arayınız..." />
     </com.google.android.material.card.MaterialCardView>
 
     <LinearLayout
@@ -39,66 +33,108 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/ayarlarTextView">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="5dp"
-            android:text="Hareketlerin"
-            android:textSize="22sp" />
-
-        <com.google.android.material.card.MaterialCardView
+        <LinearLayout
+            android:id="@+id/hareketlerBaslikLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardCornerRadius="12dp"
-            app:strokeWidth="1dp">
-        </com.google.android.material.card.MaterialCardView>
+            android:clickable="true"
+            android:focusable="true"
+            android:orientation="vertical"
+            android:paddingVertical="10dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Hareketlerin"
+                android:textSize="22sp" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardHareketlerDetaylari"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:visibility="gone"
+                app:cardCornerRadius="12dp"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="15dp">
+
+                    <TextView
+                        android:id="@+id/kullanimSuresiView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="15dp"
+                        android:text="Bugünkü Kullanım: 0 sa 0 dk"
+                        android:textSize="18sp" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginBottom="15dp"
+                        android:background="?android:attr/listDivider" />
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Bildirimleri Al"
+                            android:textSize="18sp"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <com.google.android.material.switchmaterial.SwitchMaterial
+                            android:id="@+id/bildirimlerSwitchMaterial"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:scaleX="1.2"
+                            android:scaleY="1.2"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+        </LinearLayout>
 
         <TextView
-            android:id="@+id/uygulamaTercihleriTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="20dp"
             android:layout_marginBottom="8dp"
             android:text="Uygulama Tercihleri:"
             android:textSize="22sp" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/buttonBildirimler"
-            android:layout_width="match_parent"
-            android:layout_height="55dp">
+            android:layout_width="380dp"
+            android:layout_height="60dp">
 
             <TextView
-                android:id="@+id/bildirimAyarlarıTextView"
+                android:id="@+id/karanlikMod"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Bildirim Ayarları:"
+                android:text="Koyu Tema:"
                 android:textSize="22sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/bildirimAyarlarıConstraintLayout"
-            android:layout_width="match_parent"
-            android:layout_height="55dp">
-
-            <TextView
-                android:id="@+id/koyuModTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Karanlık Mod"
-                android:textSize="22sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
             <com.google.android.material.switchmaterial.SwitchMaterial
-            android:id="@+id/acKapat"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+                android:id="@+id/acKapat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:scaleX="1.3"
+                android:scaleY="1.3"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>
 

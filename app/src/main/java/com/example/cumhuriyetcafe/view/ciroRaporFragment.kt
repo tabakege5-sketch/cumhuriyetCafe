@@ -36,7 +36,10 @@ class ciroRaporFragment : Fragment() {
             verileriHesaplaVeGoster()
         }
         binding.ciroHesapla.setOnClickListener {
+            verileriHesaplaVeGoster()
+            if (isAdded) Toast.makeText(requireContext(), "Ciro verileri güncellendi", Toast.LENGTH_SHORT).show()
         }
+        verileriHesaplaVeGoster()
     }
     private fun verileriHesaplaVeGoster() {
         try {
@@ -61,10 +64,8 @@ class ciroRaporFragment : Fragment() {
                         binding.textGunlukCiroHesaplamaView.text = "Günlük Ciro: %.2f TL".format(netCiro)
                         binding.textToplamCiroHesaplamaView.text = "Toplam Ciro: %.2f TL".format(netCiro)
                         binding.sonucTextView.text = "Kalan Para %.2f TL".format(netCiro)
-                        ciroListesi.reverse()
-                        adapter.verileriGuncelle(ciroListesi)
-
-                        if (isAdded) Toast.makeText(requireContext(), "Kazanç hesaplandı!", Toast.LENGTH_SHORT).show()
+                        val guncelListe = ArrayList(ciroListesi.reversed())
+                        adapter.verileriGuncelle(guncelListe)
                     } else {
                         if (isAdded) Toast.makeText(requireContext(), "Kayıtlı veri bulunamadı!", Toast.LENGTH_SHORT).show()
                     }
@@ -74,7 +75,7 @@ class ciroRaporFragment : Fragment() {
                 }
             })
         } catch (e: Exception) {
-            if (isAdded) Toast.makeText(requireContext(), "Bir hata oluştu: ${e.localizedMessage}", Toast.LENGTH_LONG).show()
+            if (isAdded) Toast.makeText(requireContext(),"Bir hata oluştu: ${e.localizedMessage}", Toast.LENGTH_LONG).show()
         }
     }
     override fun onDestroyView() {

@@ -10,10 +10,11 @@
 
     <ImageView
         android:id="@+id/imageView"
+        android:background="@color/black"
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_marginTop="40dp"
-        android:src="@drawable/common_google_signin_btn_icon_dark"
+        android:src="@drawable/common_google_signin_btn_icon_light"
         android:contentDescription="Google ile Giriş"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -47,8 +48,11 @@
         android:id="@+id/girisButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="25dp"
+        android:textStyle="italic"
+        android:textColor="@color/black"
         android:text="GİRİŞ YAP"
+        android:backgroundTint="#76453D3D"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editTextSifre" />
