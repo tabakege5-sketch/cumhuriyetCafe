@@ -5,129 +5,133 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="16dp">
-
     <TextView
-        android:id="@+id/headerTitle"
-        android:layout_width="wrap_content"
+        android:id="@+id/raporTextView"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:text="Raporlar:"
-        android:textSize="22sp"
-        android:textColor="?android:attr/textColorPrimary"
+        android:layout_marginTop="8dp"
+        android:text="Güncel Raporlar:"
+        android:textSize="18sp"
+        android:gravity="center"
+        android:padding="10dp"
+        android:background="#9E9E9E"
+        android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
-        android:id="@+id/gelirHesapla"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:text="Gelir Hesaplama"
-        app:layout_constraintTop_toBottomOf="@id/headerTitle"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <FrameLayout
-        android:id="@+id/gelirHesaplamaLayout"
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardGelir"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        app:layout_constraintTop_toBottomOf="@id/gelirHesapla"
+        android:layout_marginTop="20dp"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="4dp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintTop_toBottomOf="@id/raporTextView">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="12dp"
-            android:gravity="center"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:padding="16dp">
+            <Button
+                android:textColor="@color/white"
+                android:id="@+id/gelirHesapla"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="#9E9E9E"
+                android:text="Gelir Ve Gider Hesapla" />
 
             <TextView
                 android:id="@+id/textGunlukGelirHesaplamaView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Günlük Gelir: 0.00 TL"
-                android:textColor="?android:attr/textColorPrimary"
-                android:textSize="18sp" />
+                android:layout_marginTop="12dp"
+                android:text="Günlük Gelir: 0,00 TL"
+                android:textSize="17sp" />
 
             <TextView
                 android:id="@+id/textGunlukGiderHesaplamaView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="Günlük Gider: 0.00 TL"
-                android:textColor="?android:attr/textColorPrimary"
-                android:textSize="18sp" />
+                android:layout_marginTop="4dp"
+                android:text="Günlük Gider: 0,00 TL"
+                android:textSize="17sp" />
         </LinearLayout>
-    </FrameLayout>
+    </androidx.cardview.widget.CardView>
 
-    <Button
-        android:id="@+id/ciroHesapla"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:text="Ciro Hesaplama"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/gelirHesaplamaLayout" />
-
-    <FrameLayout
-        android:id="@+id/ciroHesaplamaLayout"
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardCiro"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        app:layout_constraintTop_toBottomOf="@id/ciroHesapla"
+        android:layout_marginTop="16dp"
+        app:cardCornerRadius="12dp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintTop_toBottomOf="@id/cardGelir">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="12dp"
-            android:gravity="center"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <Button
+                android:id="@+id/ciroHesapla"
+                android:textColor="@color/white"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="#9E9E9E"
+                android:text="Ciro Detayları" />
 
             <TextView
                 android:id="@+id/textGunlukCiroHesaplamaView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Günlük Ciro: 0.00 TL"
-                android:textColor="?android:attr/textColorPrimary"
-                android:textSize="18sp" />
+                android:layout_marginTop="12dp"
+                android:text="Günlük Ciro: 0,00 TL"
+                android:textSize="17sp" />
 
             <TextView
                 android:id="@+id/textToplamCiroHesaplamaView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="Toplam Ciro: 0.00 TL"
-                android:textColor="?android:attr/textColorPrimary"
-                android:textSize="18sp" />
+                android:layout_marginTop="4dp"
+                android:text="Toplam Ciro: 0,00 TL"
+                android:textSize="17sp" />
         </LinearLayout>
-    </FrameLayout>
+    </androidx.cardview.widget.CardView>
 
     <TextView
         android:id="@+id/sonucTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:text="Kalan Para 0.00 TL"
-        android:textColor="?android:attr/textColorPrimary"
-        android:textSize="26sp"
-        app:layout_constraintTop_toBottomOf="@+id/ciroHesaplamaLayout"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerViewCiro"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginTop="16dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:padding="12dp"
+        android:text="Net Kalan Para: 0.00 TL"
+        android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/sonucTextView" />
+        app:layout_constraintTop_toBottomOf="@+id/cardCiro" />
+    <TextView
+        android:id="@+id/kalanParaTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="17dp"
+        android:text="Satılan Ürünler:"
+        android:textSize="20sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/sonucTextView" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/kalanRecyclerViewCiro"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="8dp"
+        android:clipToPadding="false"
+        android:paddingBottom="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/kalanParaTextView" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

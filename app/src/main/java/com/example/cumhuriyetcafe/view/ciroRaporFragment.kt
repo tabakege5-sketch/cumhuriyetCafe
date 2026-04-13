@@ -1,5 +1,6 @@
 package com.example.cumhuriyetcafe.view
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -30,54 +31,58 @@ class ciroRaporFragment : Fragment() {
         val url = "https://cumhuriyetcafe-fb26c-default-rtdb.europe-west1.firebasedatabase.app"
         dbRef = FirebaseDatabase.getInstance(url).getReference("ciro_kayitlari")
         adapter = ciroAdapter(ciroListesi)
-        binding.recyclerViewCiro.layoutManager = LinearLayoutManager(context)
-        binding.recyclerViewCiro.adapter = adapter
-        binding.gelirHesapla.setOnClickListener {
-            verileriHesaplaVeGoster()
-        }
+        binding.kalanRecyclerViewCiro.layoutManager = LinearLayoutManager(context)
+        binding.kalanRecyclerViewCiro.adapter = adapter
+        binding.gelirHesapla.setOnClickListener { verileriHesaplaVeGoster() }
         binding.ciroHesapla.setOnClickListener {
             verileriHesaplaVeGoster()
-            if (isAdded) Toast.makeText(requireContext(), "Ciro verileri güncellendi", Toast.LENGTH_SHORT).show()
+            if (isAdded) Toast.makeText(requireContext(), "Veriler güncellendi", Toast.LENGTH_SHORT).show()
         }
         verileriHesaplaVeGoster()
     }
+
     private fun verileriHesaplaVeGoster() {
-        try {
-            dbRef.addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    if (_binding == null) return
-                    ciroListesi.clear()
-                    var toplamGelir = 0.0
-                    var toplamGider = 0.0
-                    if (snapshot.exists()) {
-                        for (item in snapshot.children) {
-                            val kayit = item.getValue(ciroKayit::class.java)
-                            kayit?.let {
-                                ciroListesi.add(it)
-                                toplamGelir += it.gelir
-                                toplamGider += it.gider
-                            }
+        val sharedPref = requireActivity().getSharedPreferences("UygulamaAyarlari", Context.MODE_PRIVATE)
+        val birim = sharedPref.getString("paraBirimi", "₺") ?: "₺"
+
+        dbRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (_binding == null) return
+
+                ciroListesi.clear()
+                var toplamGelir = 0.0
+                var toplamGider = 0.0
+
+                if (snapshot.exists()) {
+                    for (item in snapshot.children) {
+                        val kayit = item.getValue(ciroKayit::class.java)
+                        kayit?.let {
+                            ciroListesi.add(it)
+                            toplamGelir += it.gelir
+                            toplamGider += it.gider
                         }
-                        val netCiro = toplamGelir - toplamGider
-                        binding.textGunlukGelirHesaplamaView.text = "Günlük Gelir: %.2f TL".format(toplamGelir)
-                        binding.textGunlukGiderHesaplamaView.text = "Günlük Gider: %.2f TL".format(toplamGider)
-                        binding.textGunlukCiroHesaplamaView.text = "Günlük Ciro: %.2f TL".format(netCiro)
-                        binding.textToplamCiroHesaplamaView.text = "Toplam Ciro: %.2f TL".format(netCiro)
-                        binding.sonucTextView.text = "Kalan Para %.2f TL".format(netCiro)
-                        val guncelListe = ArrayList(ciroListesi.reversed())
-                        adapter.verileriGuncelle(guncelListe)
-                    } else {
-                        if (isAdded) Toast.makeText(requireContext(), "Kayıtlı veri bulunamadı!", Toast.LENGTH_SHORT).show()
                     }
+
+                    val netCiro = toplamGelir - toplamGider
+                    binding.textGunlukGelirHesaplamaView.text = "Günlük Gelir: ${String.format("%.2f", toplamGelir)} $birim"
+                    binding.textGunlukGiderHesaplamaView.text = "Günlük Gider: ${String.format("%.2f", toplamGider)} $birim"
+                    binding.textGunlukCiroHesaplamaView.text = "Günlük Ciro: ${String.format("%.2f", netCiro)} $birim"
+                    binding.textToplamCiroHesaplamaView.text = "Toplam Ciro: ${String.format("%.2f", netCiro)} $birim"
+                    binding.sonucTextView.text = "Net Kalan: ${String.format("%.2f", netCiro)} $birim"
+                    val guncelListe = ArrayList(ciroListesi.reversed())
+                    adapter.verileriGuncelle(guncelListe)
+
+                } else {
+                    if (isAdded) Toast.makeText(requireContext(), "Henüz kayıtlı veri bulunamadı", Toast.LENGTH_SHORT).show()
                 }
-                override fun onCancelled(error: DatabaseError) {
-                    if (isAdded) Toast.makeText(requireContext(), "Hata: ${error.message}", Toast.LENGTH_SHORT).show()
-                }
-            })
-        } catch (e: Exception) {
-            if (isAdded) Toast.makeText(requireContext(),"Bir hata oluştu: ${e.localizedMessage}", Toast.LENGTH_LONG).show()
-        }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                if (isAdded) Toast.makeText(requireContext(), "Hata: ${error.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

@@ -1,11 +1,11 @@
 package com.example.cumhuriyetcafe.adapter
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.cumhuriyetcafe.dataClass.urunler
 import com.example.cumhuriyetcafe.databinding.MenuRecyclerViewBinding
-
 class menuAdapter(
     private var urunListesi: ArrayList<urunler>,
     private val onUrunDegisti: (urun: urunler, isArtis: Boolean) -> Unit
@@ -24,10 +24,11 @@ class menuAdapter(
         val currentUrun = urunListesi[position]
         val urunAdi = currentUrun.urunAdi ?: "Bilinmeyen Ürün"
         val adet = urunAdetleri[urunAdi] ?: 0
-
+        val sharedPref = holder.itemView.context.getSharedPreferences("UygulamaAyarlari", Context.MODE_PRIVATE)
+        val birim = sharedPref.getString("paraBirimi", "₺") ?: "₺"
         holder.binding.apply {
             urununIsmi.text = urunAdi
-            urununFiyati.text = String.format("%.2f TL", currentUrun.fiyat)
+            urununFiyati.text = String.format("%.2f %s", currentUrun.fiyat, birim)
             urununAdedi.text = adet.toString()
 
             buttonArti.setOnClickListener { onUrunDegisti(currentUrun, true) }

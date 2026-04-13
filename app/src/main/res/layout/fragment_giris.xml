@@ -8,53 +8,113 @@
     android:padding="24dp"
     tools:context=".view.girisFragment">
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:background="@color/black"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_marginTop="40dp"
-        android:src="@drawable/common_google_signin_btn_icon_light"
-        android:contentDescription="Google ile Giriş"
+    <LinearLayout
+        android:id="@+id/girisLinearLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="16dp"
+        app:layout_constraintVertical_bias="0.25"
+        app:layout_constraintBottom_toTopOf="@+id/loginGiris"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
 
-    <EditText
-        android:id="@+id/eMailText"
+        <androidx.cardview.widget.CardView
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            app:cardCornerRadius="50dp">
+
+            <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:contentDescription="Google ile Giriş"
+                android:padding="20dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/common_google_signin_btn_icon_light" />
+        </androidx.cardview.widget.CardView>
+
+        <TextView
+            android:textStyle="italic"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Google ile Giriş Yap"
+            android:textSize="20sp" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/veyaTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Veya"
+        app:layout_constraintBottom_toTopOf="@+id/loginGiris"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/girisLinearLayout" />
+
+    <LinearLayout
+        android:id="@+id/loginGiris"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:hint="Email Adresinizi Giriniz"
-        android:inputType="textEmailAddress"
-        android:padding="12dp"
+        android:layout_marginBottom="50dp"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView" />
+        app:layout_constraintStart_toStartOf="parent">
 
-    <EditText
-        android:id="@+id/editTextSifre"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:hint="Şifrenizi giriniz"
-        android:inputType="textPassword"
-        android:padding="12dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/eMailText" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            android:text="Email ile Giriş Yap"
+            android:textColor="#212121"
+            android:textSize="22sp" />
 
-    <Button
-        android:id="@+id/girisButton"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="25dp"
-        android:textStyle="italic"
-        android:textColor="@color/black"
-        android:text="GİRİŞ YAP"
-        android:backgroundTint="#76453D3D"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextSifre" />
+        <EditText
+            android:id="@+id/eMailText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:backgroundTint="#212121"
+            android:hint="Email Adresinizi Giriniz"
+            android:inputType="textEmailAddress"
+            android:padding="16dp"
+            android:textColorHint="#9E9E9E" />
 
+        <EditText
+            android:id="@+id/editTextSifre"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#212121"
+            android:hint="Şifrenizi Giriniz"
+            android:inputType="textPassword"
+            android:padding="16dp"
+            android:textColorHint="#9E9E9E" />
+
+        <TextView
+            android:id="@+id/sifremiUnuttumTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="24dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:text="Şifremi Unuttum"
+            android:textSize="15sp" />
+
+        <Button
+            android:id="@+id/girisButton"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:textColor="@color/white"
+            android:backgroundTint="#9E9E9E"
+            android:layout_marginBottom="20dp"
+            android:text="GİRİŞ YAP" />
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

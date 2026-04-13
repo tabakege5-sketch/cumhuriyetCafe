@@ -11,12 +11,11 @@ import androidx.navigation.ui.setupWithNavController
 import com.example.cumhuriyetcafe.R
 import com.example.cumhuriyetcafe.databinding.ActivityMainBinding
 import java.util.Locale
-
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        val sharedPref = getSharedPreferences("TemaAyari", Context.MODE_PRIVATE)
+        val sharedPref = getSharedPreferences("UygulamaAyarlari", Context.MODE_PRIVATE)
         val kaydedilenDil = sharedPref.getString("seciliDil", "tr") ?: "tr"
         val locale = Locale(kaydedilenDil)
         Locale.setDefault(locale)
@@ -62,6 +61,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     companion object {
+        @JvmField
         var baslangicZamani: Long = 0
     }
 }

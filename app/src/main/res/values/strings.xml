@@ -2,4 +2,11 @@
     <string name="app_name">cumhuriyetCafe</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_main">MainActivity</string>
+    <string name="para_birimi">₺</string>
+    <string name="gunluk_gelir">Günlük Gelir: %1$s %2$s</string>
+    <string name="gunluk_gider">Günlük Gider: %1$s %2$s</string>
+    <string name="gunluk_ciro">Günlük Ciro: %1$s %2$s</string>
+    <string name="toplam_ciro">Toplam Ciro: %1$s %2$s</string>
+    <string name="kalan_para">Kalan Para: %1$s %2$s</string>
+    <string name="toplam_tutar">TOPLAM: %1$s %2$s</string>
 </resources>

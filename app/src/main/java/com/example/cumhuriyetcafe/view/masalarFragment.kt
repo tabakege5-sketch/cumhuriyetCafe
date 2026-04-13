@@ -48,21 +48,23 @@ class masalarFragment : Fragment() {
             adapter = mAdapter
         }
     }
-
     private fun masalariAnlikDinle() {
-        dbRef.addValueEventListener(object : ValueEventListener {
+        val rtDbUrl = "https://cumhuriyetcafe-fb26c-default-rtdb.europe-west1.firebasedatabase.app"
+        val database = FirebaseDatabase.getInstance(rtDbUrl).reference.child("Masalar")
+
+        database.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val yeniMasaListesi = mutableListOf<masa>()
 
                 for (i in 1..20) {
                     val mKey = "Masa$i"
-                    val isDolu = snapshot.child(mKey).value.toString() == "true"
-                    val durumDegeri = if (isDolu) "true" else "false"
+                    val firebaseValue = snapshot.child(mKey).value
+                    val isDolu = firebaseValue != null && (firebaseValue == true || firebaseValue.toString() == "true")
 
                     yeniMasaListesi.add(masa(
                         id = i.toString(),
                         isim = "Masa $i",
-                        durum = durumDegeri
+                        durum = if (isDolu) "true" else "false"
                     ))
                 }
 

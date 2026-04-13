@@ -1,5 +1,6 @@
 package com.example.cumhuriyetcafe.adapter
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -19,9 +20,11 @@ class ciroAdapter(private var ciroListesi: List<ciroKayit>) :
     override fun onBindViewHolder(holder: CiroViewHolder, position: Int) {
         val veri = ciroListesi[position]
         val detayliMetin = "${veri.tarih}\n${veri.aciklama}"
-
+        val sharedPref = holder.itemView.context.getSharedPreferences("UygulamaAyarlari", Context.MODE_PRIVATE)
+        val birim = sharedPref.getString("paraBirimi", "₺") ?: "₺"
         holder.binding.textViewTarih.text = detayliMetin
-        holder.binding.textViewMiktar.text = "${veri.gunlukCiro} TL"
+        val formatliMiktar = String.format("%.2f", veri.gunlukCiro)
+        holder.binding.textViewMiktar.text = "$formatliMiktar $birim"
     }
 
     override fun getItemCount(): Int = ciroListesi.size
