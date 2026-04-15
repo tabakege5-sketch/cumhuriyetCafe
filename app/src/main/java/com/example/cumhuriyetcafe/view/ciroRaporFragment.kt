@@ -21,7 +21,11 @@ class ciroRaporFragment : Fragment() {
     private lateinit var adapter: ciroAdapter
     private var ciroListesi = ArrayList<ciroKayit>()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         _binding = FragmentCiroRaporBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -45,23 +49,28 @@ class ciroRaporFragment : Fragment() {
         binding.ciroHesapla.setOnClickListener {
             verileriHesaplaVeGoster()
             if (bildirimIzniVarMi()) {
-                Toast.makeText(requireContext(), "Ciro verileri güncellendi", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Ciro verileri güncellendi", Toast.LENGTH_SHORT)
+                    .show()
             }
         }
         verileriHesaplaVeGoster()
     }
 
     private fun bildirimIzniVarMi(): Boolean {
-        val sharedPref = requireActivity().getSharedPreferences("UygulamaAyarlari", Context.MODE_PRIVATE)
+        val sharedPref =
+            requireActivity().getSharedPreferences("UygulamaAyarlari", Context.MODE_PRIVATE)
         return sharedPref.getBoolean("bildirimIzni", true)
     }
+
     private fun verileriHesaplaVeGoster() {
-        val sharedPref = requireActivity().getSharedPreferences("UygulamaAyarlari", Context.MODE_PRIVATE)
+        val sharedPref =
+            requireActivity().getSharedPreferences("UygulamaAyarlari", Context.MODE_PRIVATE)
         val guncelBirim = sharedPref.getString("paraBirimi", "₺") ?: "₺"
         val kurlar = mapOf(
-            "$" to 44.73,
-            "€" to 52.82,
-            "CH" to 56.43
+            "$" to 44.75,
+            "€" to 52.77,
+            "CH" to 57.31,
+            "£" to 60.66 //İngiliz Sterlini
         )
 
         dbRef.addListenerForSingleValueEvent(object : ValueEventListener {
@@ -85,22 +94,30 @@ class ciroRaporFragment : Fragment() {
                     val hesaplanmisGelir = toplamGelirTL / secilenKur
                     val hesaplanmisGider = toplamGiderTL / secilenKur
                     val netCiro = hesaplanmisGelir - hesaplanmisGider
-                    binding.textGunlukGelirHesaplamaView.text = "Günlük Gelir: ${String.format("%.2f", hesaplanmisGelir)} $guncelBirim"
-                    binding.textGunlukGiderHesaplamaView.text = "Günlük Gider: ${String.format("%.2f", hesaplanmisGider)} $guncelBirim"
-                    binding.textGunlukCiroHesaplamaView.text = "Günlük Ciro: ${String.format("%.2f", netCiro)} $guncelBirim"
-                    binding.textToplamCiroHesaplamaView.text = "Toplam Ciro: ${String.format("%.2f", netCiro)} $guncelBirim"
-                    binding.sonucTextView.text = "Net Kalan: ${String.format("%.2f", netCiro)} $guncelBirim"
+                    binding.textGunlukGelirHesaplamaView.text =
+                        "Günlük Gelir: ${String.format("%.2f", hesaplanmisGelir)} $guncelBirim"
+                    binding.textGunlukGiderHesaplamaView.text =
+                        "Günlük Gider: ${String.format("%.2f", hesaplanmisGider)} $guncelBirim"
+                    binding.textGunlukCiroHesaplamaView.text =
+                        "Günlük Ciro: ${String.format("%.2f", netCiro)} $guncelBirim"
+                    binding.textToplamCiroHesaplamaView.text =
+                        "Toplam Ciro: ${String.format("%.2f", netCiro)} $guncelBirim"
+                    binding.sonucTextView.text =
+                        "Net Kalan: ${String.format("%.2f", netCiro)} $guncelBirim"
                     val guncelListe = ArrayList(ciroListesi.reversed())
                     adapter.verileriGuncelle(guncelListe)
                 }
             }
+
             override fun onCancelled(error: DatabaseError) {
                 if (isAdded && bildirimIzniVarMi()) {
-                    Toast.makeText(requireContext(), "Hata: ${error.message}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "Hata: ${error.message}", Toast.LENGTH_SHORT)
+                        .show()
                 }
             }
         })
     }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

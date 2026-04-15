@@ -12,7 +12,7 @@ android {
     defaultConfig {
         applicationId = "com.example.cumhuriyetcafe"
         minSdk = 24
-        targetSdk = 34 // Loglardaki kararsızlık nedeniyle 34 daha güvenlidir
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
