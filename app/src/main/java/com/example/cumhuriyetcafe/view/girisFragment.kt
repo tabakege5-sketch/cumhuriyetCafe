@@ -33,20 +33,17 @@ class girisFragment : Fragment() {
         try {
             val account = task.getResult(ApiException::class.java)!!
             val credential = GoogleAuthProvider.getCredential(account.idToken!!, null)
+
             auth.signInWithCredential(credential).addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     val user = auth.currentUser
                     user?.let { guncelProfilFotografi(it) }
                     girisiKaydet()
                     masalaraGit()
-                } else {
-                    if (isAdded) Toast.makeText(requireContext(), "Firebase Bağlantı Hatası: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
                 }
             }
-        } catch (e: ApiException) {
-            if (isAdded) Toast.makeText(requireContext(), "Google Hatası Kod: ${e.statusCode}", Toast.LENGTH_SHORT).show()
         } catch (e: Exception) {
-            if (isAdded) Toast.makeText(requireContext(), "Beklenmedik Hata: ${e.message}", Toast.LENGTH_SHORT).show()
+            if (isAdded) Toast.makeText(requireContext(), "Google Giriş Hatası", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -59,19 +56,14 @@ class girisFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         auth = FirebaseAuth.getInstance()
-        val sharedPref = requireActivity().getSharedPreferences("TemaAyari", Context.MODE_PRIVATE)
-        val isLoggedIn = sharedPref.getBoolean("isLoggedIn", false)
 
-        if (auth.currentUser != null && isLoggedIn) {
+        val sharedPref = requireActivity().getSharedPreferences("TemaAyari", Context.MODE_PRIVATE)
+        if (auth.currentUser != null && sharedPref.getBoolean("isLoggedIn", false)) {
             masalaraGit()
             return
         }
-        val currentUser = auth.currentUser
-        if (currentUser != null) {
-            guncelProfilFotografi(currentUser)
-        } else {
-            profiliSil()
-        }
+
+        auth.currentUser?.let { guncelProfilFotografi(it) } ?: googleSimgesiYap()
 
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken("50692335386-kber6ueb97j8dh8si0kltfna11r4pj2u.apps.googleusercontent.com")
@@ -79,68 +71,45 @@ class girisFragment : Fragment() {
             .build()
         googleSignInClient = GoogleSignIn.getClient(requireActivity(), gso)
 
+        binding.girisLinearLayout.setOnClickListener {
+            googleSignInLauncher.launch(googleSignInClient.signInIntent)
+        }
+
         binding.girisButton.setOnClickListener {
             val email = binding.eMailText.text.toString().trim()
             val sifre = binding.editTextSifre.text.toString().trim()
             if (email.isNotEmpty() && sifre.isNotEmpty()) {
-                auth.signInWithEmailAndPassword(email, sifre)
-                    .addOnCompleteListener { task ->
-                        if (task.isSuccessful) {
-                            girisiKaydet()
-                            masalaraGit()
-                        } else {
-                            kayitOl(email, sifre)
-                        }
+                auth.signInWithEmailAndPassword(email, sifre).addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        girisiKaydet()
+                        masalaraGit()
                     }
-            } else {
-                Toast.makeText(requireContext(), "Lütfen tüm alanları doldurunuz", Toast.LENGTH_SHORT).show()
-            }
-        }
-        binding.girisLinearLayout.setOnClickListener {
-            val signInIntent = googleSignInClient.signInIntent
-            googleSignInLauncher.launch(signInIntent)
-        }
-        binding.sifremiUnuttumTextView.setOnClickListener {
-            val email = binding.eMailText.text.toString().trim()
-            if (email.isNotEmpty()) {
-                auth.sendPasswordResetEmail(email).addOnSuccessListener {
-                    Toast.makeText(requireContext(), "Sıfırlama e-postası gönderdik", Toast.LENGTH_SHORT).show()
                 }
-            } else {
-                Toast.makeText(requireContext(), "Lütfen önce e-posta adresini gir ", Toast.LENGTH_SHORT).show()
             }
         }
     }
+
     private fun guncelProfilFotografi(user: FirebaseUser) {
-        user.photoUrl?.let { url ->
-            binding.imageView.load(url) {
+        val photoUrl = user.photoUrl
+        if (photoUrl != null) {
+            binding.imageView.load(photoUrl) {
                 crossfade(true)
                 transformations(CircleCropTransformation())
                 listener(onSuccess = { _, _ ->
                     binding.imageView.setPadding(0, 0, 0, 0)
                     binding.imageView.scaleType = android.widget.ImageView.ScaleType.CENTER_CROP
                 }, onError = { _, _ ->
-                    profiliSil()
+                    googleSimgesiYap()
                 })
             }
-        } ?: profiliSil()
-    }
-    private fun profiliSil() {
-        binding.imageView.apply {
-            setImageResource(android.R.drawable.alert_light_frame)
-            setPadding(20, 20, 20, 20)
-            scaleType = android.widget.ImageView.ScaleType.CENTER_INSIDE
+        } else {
+            googleSimgesiYap()
         }
     }
-
-    private fun kayitOl(email: String, sifre: String) {
-        auth.createUserWithEmailAndPassword(email, sifre).addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                girisiKaydet()
-                masalaraGit()
-            } else {
-                if (isAdded) Toast.makeText(requireContext(), "Hata: ${task.exception?.message}", Toast.LENGTH_LONG).show()
-            }
+    private fun googleSimgesiYap() {
+        binding.imageView.apply {
+            setPadding(15, 15, 15, 15)
+            scaleType = android.widget.ImageView.ScaleType.CENTER_INSIDE
         }
     }
 
@@ -151,7 +120,10 @@ class girisFragment : Fragment() {
 
     private fun masalaraGit() {
         if (isAdded) {
-            findNavController().navigate(R.id.action_girisFragment_to_masalarFragment)
+            val navController = findNavController()
+            if (navController.currentDestination?.id == R.id.girisFragment) {
+                navController.navigate(R.id.action_girisFragment_to_masalarFragment)
+            }
         }
     }
 
@@ -160,5 +132,3 @@ class girisFragment : Fragment() {
         _binding = null
     }
 }
-//giriş yaparken çift katmanlıdır 1 email şifre
-// 2 google üzerinen

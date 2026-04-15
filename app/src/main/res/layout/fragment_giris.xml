@@ -24,26 +24,28 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <androidx.cardview.widget.CardView
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            app:cardCornerRadius="50dp">
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="@android:color/transparent"
+            app:cardCornerRadius="60dp">
 
             <ImageView
                 android:id="@+id/imageView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:contentDescription="Google ile Giriş"
-                android:padding="20dp"
+                android:contentDescription="Cafe Logo"
+                android:padding="0dp"
                 android:scaleType="centerInside"
-                android:src="@drawable/common_google_signin_btn_icon_light" />
+                android:src="@drawable/ic_logo_vector" />
         </androidx.cardview.widget.CardView>
 
         <TextView
-            android:textStyle="italic"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
             android:text="Google ile Giriş Yap"
-            android:textSize="20sp" />
+            android:textSize="24sp" />
     </LinearLayout>
 
     <TextView
@@ -51,6 +53,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Veya"
+        android:textColor="#9E9E9E"
         app:layout_constraintBottom_toTopOf="@+id/loginGiris"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -73,7 +76,7 @@
             android:layout_marginBottom="24dp"
             android:text="Email ile Giriş Yap"
             android:textColor="#212121"
-            android:textSize="22sp" />
+            android:textSize="20sp" />
 
         <EditText
             android:id="@+id/eMailText"
@@ -106,7 +109,7 @@
             android:clickable="true"
             android:focusable="true"
             android:text="Şifremi Unuttum"
-            android:textSize="15sp" />
+            android:textSize="14sp" />
 
         <Button
             android:id="@+id/girisButton"

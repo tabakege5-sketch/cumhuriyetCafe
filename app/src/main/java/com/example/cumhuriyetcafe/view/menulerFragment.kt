@@ -33,19 +33,29 @@ class menulerFragment : Fragment() {
     private lateinit var katAdapter: kategoriAdapter
     private lateinit var mAdapter: menuAdapter
     private val rtDbUrl = "https://cumhuriyetcafe-fb26c-default-rtdb.europe-west1.firebasedatabase.app"
+
+    private fun bildirimIzniVarMi(): Boolean {
+        val sharedPref = requireActivity().getSharedPreferences("UygulamaAyarlari", Context.MODE_PRIVATE)
+        return sharedPref.getBoolean("bildirimIzni", true)
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentMenulerBinding.inflate(inflater, container, false)
         return binding.root
     }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         db = FirebaseFirestore.getInstance()
         aktifMasaAdi = arguments?.getString("secilenMasaId") ?: "Masa1"
         binding.textViewMasaAdi.text = aktifMasaAdi
+
         recyclerViewKur()
         verileriYukle()
         siparislerVeToplamTakibi()
+
         binding.buttonGeri.setOnClickListener { findNavController().navigateUp() }
+
         binding.siparisiKaydetButton.setOnClickListener {
             db.collection("AktifSiparisler").document(aktifMasaAdi).collection("Siparisler").get().addOnSuccessListener { snapshot ->
                 if (!snapshot.isEmpty) {
@@ -54,24 +64,35 @@ class menulerFragment : Fragment() {
                         .child(aktifMasaAdi)
                         .setValue(true)
                         .addOnSuccessListener {
-                            Toast.makeText(requireContext(), "Sipariş Kaydedildi!", Toast.LENGTH_SHORT).show()
+                            if (bildirimIzniVarMi()) {
+                                Toast.makeText(requireContext(), "Sipariş Kaydedildi!", Toast.LENGTH_SHORT).show()
+                            }
                             findNavController().popBackStack()
                         }
                 } else {
-                    Toast.makeText(requireContext(), "Lütfen önce ürün ekleyin!", Toast.LENGTH_SHORT).show()
+                    if (bildirimIzniVarMi()) {
+                        Toast.makeText(requireContext(), "Lütfen önce ürün ekleyin!", Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
         }
+
         binding.buttonOdemeYap.setOnClickListener {
             if (!binding.Nakit.isChecked && !binding.Kart.isChecked) {
-                Toast.makeText(requireContext(), "Lütfen ödeme türü seçiniz!", Toast.LENGTH_SHORT).show()
+                if (bildirimIzniVarMi()) {
+                    Toast.makeText(requireContext(), "Lütfen ödeme türü seç", Toast.LENGTH_SHORT).show()
+                }
                 return@setOnClickListener
             }
+
             db.collection("AktifSiparisler").document(aktifMasaAdi).collection("Siparisler").get().addOnSuccessListener { snapshot ->
                 if (snapshot.isEmpty) {
-                    Toast.makeText(requireContext(), "Ödenecek ürün bulunamadı!", Toast.LENGTH_SHORT).show()
+                    if (bildirimIzniVarMi()) {
+                        Toast.makeText(requireContext(), "Ödenecek ürün bulunamadı!", Toast.LENGTH_SHORT).show()
+                    }
                     return@addOnSuccessListener
                 }
+
                 var toplamTutar = 0.0
                 val urunIsimListesi = mutableListOf<String>()
                 snapshot.forEach { doc ->
@@ -80,13 +101,16 @@ class menulerFragment : Fragment() {
                     toplamTutar += fiyat
                     urunIsimListesi.add(ad)
                 }
+
                 val gruplanmisMap = urunIsimListesi.groupingBy { it }.eachCount()
                 val urunOzetMetni = gruplanmisMap.entries.joinToString(", ") { "${it.value}x ${it.key}" }
                 val sdf = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
                 val tarih = sdf.format(Date())
                 val odemeYontemi = if (binding.Nakit.isChecked) "Nakit" else "Kart"
+
                 val sp = requireActivity().getSharedPreferences("UygulamaAyarlari", Context.MODE_PRIVATE)
                 val birim = sp.getString("paraBirimi", "₺") ?: "₺"
+
                 val ciroRef = FirebaseDatabase.getInstance(rtDbUrl).getReference("ciro_kayitlari").push()
                 val yeniKayit = ciroKayit(
                     firebaseId = ciroRef.key ?: "",
@@ -96,6 +120,7 @@ class menulerFragment : Fragment() {
                     gunlukCiro = toplamTutar,
                     aciklama = "$aktifMasaAdi - $odemeYontemi | $urunOzetMetni | Birim: $birim"
                 )
+
                 ciroRef.setValue(yeniKayit).addOnSuccessListener {
                     val batch = db.batch()
                     snapshot.forEach { batch.delete(it.reference) }
@@ -107,16 +132,23 @@ class menulerFragment : Fragment() {
 
                         gizleAnaArayuz()
                         binding.basariliEkran.visibility = View.VISIBLE
+                        if (bildirimIzniVarMi()) {
+                            Toast.makeText(requireContext(), "Ödeme İşlemi Başarılı", Toast.LENGTH_SHORT).show()
+                        }
+
                         Handler(Looper.getMainLooper()).postDelayed({
                             if (_binding != null) findNavController().popBackStack()
-                        }, 3500)
+                        }, 2100)
                     }
                 }.addOnFailureListener {
-                    Toast.makeText(requireContext(), "Hata: ${it.message}", Toast.LENGTH_LONG).show()
+                    if (bildirimIzniVarMi()) {
+                        Toast.makeText(requireContext(), "Hata: ${it.message}", Toast.LENGTH_LONG).show()
+                    }
                 }
             }
         }
     }
+
     private fun gizleAnaArayuz() {
         binding.topBar.visibility = View.GONE
         binding.kontrolPaneli.visibility = View.GONE
@@ -124,6 +156,7 @@ class menulerFragment : Fragment() {
         binding.kategoriler.visibility = View.GONE
         binding.siparisiKaydetButton.visibility = View.GONE
     }
+
     private fun recyclerViewKur() {
         katAdapter = kategoriAdapter(kategoriListesi) { secilen -> urunleriFiltrele(secilen.isim) }
         binding.kategoriler.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
@@ -135,6 +168,7 @@ class menulerFragment : Fragment() {
         binding.Menu.layoutManager = LinearLayoutManager(requireContext())
         binding.Menu.adapter = mAdapter
     }
+
     private fun verileriYukle() {
         db.collection("urunler").get().addOnSuccessListener { snapshot ->
             tumUrunlerYedek.clear()
@@ -151,6 +185,7 @@ class menulerFragment : Fragment() {
             else mAdapter.updateList(tumUrunlerYedek)
         }
     }
+
     private fun urunleriFiltrele(kategoriAdi: String?) {
         if (kategoriAdi == null) return
         val trLocale = Locale("tr", "TR")
@@ -159,6 +194,7 @@ class menulerFragment : Fragment() {
         }
         mAdapter.updateList(filtrelenmis)
     }
+
     private fun siparislerVeToplamTakibi() {
         siparisAdetListener = db.collection("AktifSiparisler").document(aktifMasaAdi)
             .collection("Siparisler").addSnapshotListener { snapshot, _ ->
@@ -177,6 +213,7 @@ class menulerFragment : Fragment() {
                 mAdapter.updateAdetler(adetMap)
             }
     }
+
     private fun siparisEkle(u: urunler) {
         val veri = hashMapOf(
             "urunAdi" to u.urunAdi,
@@ -185,12 +222,14 @@ class menulerFragment : Fragment() {
         )
         db.collection("AktifSiparisler").document(aktifMasaAdi).collection("Siparisler").add(veri)
     }
+
     private fun siparisSil(u: urunler) {
         db.collection("AktifSiparisler").document(aktifMasaAdi).collection("Siparisler")
             .whereEqualTo("urunAdi", u.urunAdi).limit(1).get().addOnSuccessListener { s ->
                 if (!s.isEmpty) s.documents[0].reference.delete()
             }
     }
+
     override fun onDestroyView() {
         siparisAdetListener?.remove()
         _binding = null
