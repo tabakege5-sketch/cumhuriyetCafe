@@ -22,6 +22,7 @@ import com.google.firebase.database.FirebaseDatabase
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
+
 class menulerFragment : Fragment() {
     private var _binding: FragmentMenulerBinding? = null
     private val binding get() = _binding!!
@@ -32,14 +33,27 @@ class menulerFragment : Fragment() {
     private var siparisAdetListener: ListenerRegistration? = null
     private lateinit var katAdapter: kategoriAdapter
     private lateinit var mAdapter: menuAdapter
-    private val rtDbUrl = "https://cumhuriyetcafe-fb26c-default-rtdb.europe-west1.firebasedatabase.app"
+    private val rtDbUrl =
+        "https://cumhuriyetcafe-fb26c-default-rtdb.europe-west1.firebasedatabase.app"
+
+    private val kurlar = mapOf(
+        "$" to 44.89,
+        "€" to 52.91,
+        "CH" to 57.60,
+        "£" to 60.79
+    )
 
     private fun bildirimIzniVarMi(): Boolean {
-        val sharedPref = requireActivity().getSharedPreferences("UygulamaAyarlari", Context.MODE_PRIVATE)
+        val sharedPref =
+            requireActivity().getSharedPreferences("UygulamaAyarlari", Context.MODE_PRIVATE)
         return sharedPref.getBoolean("bildirimIzni", true)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         _binding = FragmentMenulerBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -57,95 +71,129 @@ class menulerFragment : Fragment() {
         binding.buttonGeri.setOnClickListener { findNavController().navigateUp() }
 
         binding.siparisiKaydetButton.setOnClickListener {
-            db.collection("AktifSiparisler").document(aktifMasaAdi).collection("Siparisler").get().addOnSuccessListener { snapshot ->
-                if (!snapshot.isEmpty) {
-                    FirebaseDatabase.getInstance(rtDbUrl).reference
-                        .child("Masalar")
-                        .child(aktifMasaAdi)
-                        .setValue(true)
-                        .addOnSuccessListener {
-                            if (bildirimIzniVarMi()) {
-                                Toast.makeText(requireContext(), "Sipariş Kaydedildi!", Toast.LENGTH_SHORT).show()
+            db.collection("AktifSiparisler").document(aktifMasaAdi).collection("Siparisler").get()
+                .addOnSuccessListener { snapshot ->
+                    if (!snapshot.isEmpty) {
+                        FirebaseDatabase.getInstance(rtDbUrl).reference
+                            .child("Masalar")
+                            .child(aktifMasaAdi)
+                            .setValue(true)
+                            .addOnSuccessListener {
+                                if (bildirimIzniVarMi()) {
+                                    Toast.makeText(
+                                        requireContext(),
+                                        "Sipariş Kaydedildi!",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                                findNavController().popBackStack()
                             }
-                            findNavController().popBackStack()
+                    } else {
+                        if (bildirimIzniVarMi()) {
+                            Toast.makeText(
+                                requireContext(),
+                                "Lütfen önce ürün ekleyin!",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
-                } else {
-                    if (bildirimIzniVarMi()) {
-                        Toast.makeText(requireContext(), "Lütfen önce ürün ekleyin!", Toast.LENGTH_SHORT).show()
                     }
                 }
-            }
         }
 
         binding.buttonOdemeYap.setOnClickListener {
             if (!binding.Nakit.isChecked && !binding.Kart.isChecked) {
                 if (bildirimIzniVarMi()) {
-                    Toast.makeText(requireContext(), "Lütfen ödeme türü seç", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "Lütfen ödeme türü seç", Toast.LENGTH_SHORT)
+                        .show()
                 }
                 return@setOnClickListener
             }
 
-            db.collection("AktifSiparisler").document(aktifMasaAdi).collection("Siparisler").get().addOnSuccessListener { snapshot ->
-                if (snapshot.isEmpty) {
-                    if (bildirimIzniVarMi()) {
-                        Toast.makeText(requireContext(), "Ödenecek ürün bulunamadı!", Toast.LENGTH_SHORT).show()
-                    }
-                    return@addOnSuccessListener
-                }
-
-                var toplamTutar = 0.0
-                val urunIsimListesi = mutableListOf<String>()
-                snapshot.forEach { doc ->
-                    val fiyat = doc.getDouble("fiyat") ?: 0.0
-                    val ad = doc.getString("urunAdi") ?: "Bilinmeyen"
-                    toplamTutar += fiyat
-                    urunIsimListesi.add(ad)
-                }
-
-                val gruplanmisMap = urunIsimListesi.groupingBy { it }.eachCount()
-                val urunOzetMetni = gruplanmisMap.entries.joinToString(", ") { "${it.value}x ${it.key}" }
-                val sdf = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
-                val tarih = sdf.format(Date())
-                val odemeYontemi = if (binding.Nakit.isChecked) "Nakit" else "Kart"
-
-                val sp = requireActivity().getSharedPreferences("UygulamaAyarlari", Context.MODE_PRIVATE)
-                val birim = sp.getString("paraBirimi", "₺") ?: "₺"
-
-                val ciroRef = FirebaseDatabase.getInstance(rtDbUrl).getReference("ciro_kayitlari").push()
-                val yeniKayit = ciroKayit(
-                    firebaseId = ciroRef.key ?: "",
-                    tarih = tarih,
-                    gelir = toplamTutar,
-                    gider = 0.0,
-                    gunlukCiro = toplamTutar,
-                    aciklama = "$aktifMasaAdi - $odemeYontemi | $urunOzetMetni | Birim: $birim"
-                )
-
-                ciroRef.setValue(yeniKayit).addOnSuccessListener {
-                    val batch = db.batch()
-                    snapshot.forEach { batch.delete(it.reference) }
-                    batch.commit().addOnSuccessListener {
-                        FirebaseDatabase.getInstance(rtDbUrl).reference
-                            .child("Masalar")
-                            .child(aktifMasaAdi)
-                            .removeValue()
-
-                        gizleAnaArayuz()
-                        binding.basariliEkran.visibility = View.VISIBLE
+            db.collection("AktifSiparisler").document(aktifMasaAdi).collection("Siparisler").get()
+                .addOnSuccessListener { snapshot ->
+                    if (snapshot.isEmpty) {
                         if (bildirimIzniVarMi()) {
-                            Toast.makeText(requireContext(), "Ödeme İşlemi Başarılı", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                requireContext(),
+                                "Ödenecek ürün bulunamadı!",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
-
-                        Handler(Looper.getMainLooper()).postDelayed({
-                            if (_binding != null) findNavController().popBackStack()
-                        }, 2100)
+                        return@addOnSuccessListener
                     }
-                }.addOnFailureListener {
-                    if (bildirimIzniVarMi()) {
-                        Toast.makeText(requireContext(), "Hata: ${it.message}", Toast.LENGTH_LONG).show()
+
+                    var toplamTutarTl = 0.0
+                    val urunIsimListesi = mutableListOf<String>()
+                    snapshot.forEach { doc ->
+                        val fiyat = doc.getDouble("fiyat") ?: 0.0
+                        val ad = doc.getString("urunAdi") ?: "Bilinmeyen"
+                        toplamTutarTl += fiyat
+                        urunIsimListesi.add(ad)
+                    }
+
+                    val sharedPref = requireActivity().getSharedPreferences(
+                        "UygulamaAyarlari",
+                        Context.MODE_PRIVATE
+                    )
+                    val birim = sharedPref.getString("paraBirimi", "₺") ?: "₺"
+                    val kur = kurlar[birim] ?: 1.0
+                    val hesaplananTutar = toplamTutarTl / kur
+                    val gruplanmisMap = urunIsimListesi.groupingBy { it }.eachCount()
+                    val urunOzetMetni =
+                        gruplanmisMap.entries.joinToString(", ") { "${it.value}x ${it.key}" }
+                    val sdf = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
+                    val tarih = sdf.format(Date())
+                    val odemeYontemi = if (binding.Nakit.isChecked) "Nakit" else "Kart"
+
+                    val ciroRef =
+                        FirebaseDatabase.getInstance(rtDbUrl).getReference("ciro_kayitlari").push()
+                    val yeniKayit = ciroKayit(
+                        firebaseId = ciroRef.key ?: "",
+                        tarih = tarih,
+                        gelir = toplamTutarTl,
+                        gider = 0.0,
+                        gunlukCiro = toplamTutarTl,
+                        aciklama = "$aktifMasaAdi - $odemeYontemi | $urunOzetMetni | Tahsilat: ${
+                            String.format(
+                                "%.2f",
+                                hesaplananTutar
+                            )
+                        } $birim"
+                    )
+
+                    ciroRef.setValue(yeniKayit).addOnSuccessListener {
+                        val batch = db.batch()
+                        snapshot.forEach { batch.delete(it.reference) }
+                        batch.commit().addOnSuccessListener {
+                            FirebaseDatabase.getInstance(rtDbUrl).reference
+                                .child("Masalar")
+                                .child(aktifMasaAdi)
+                                .removeValue()
+
+                            gizleAnaArayuz()
+                            binding.basariliEkran.visibility = View.VISIBLE
+                            if (bildirimIzniVarMi()) {
+                                Toast.makeText(
+                                    requireContext(),
+                                    "Ödeme İşlemi Başarılı",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+
+                            Handler(Looper.getMainLooper()).postDelayed({
+                                if (_binding != null) findNavController().popBackStack()
+                            }, 2100)
+                        }
+                    }.addOnFailureListener {
+                        if (bildirimIzniVarMi()) {
+                            Toast.makeText(
+                                requireContext(),
+                                "Hata: ${it.message}",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
                     }
                 }
-            }
         }
     }
 
@@ -159,7 +207,8 @@ class menulerFragment : Fragment() {
 
     private fun recyclerViewKur() {
         katAdapter = kategoriAdapter(kategoriListesi) { secilen -> urunleriFiltrele(secilen.isim) }
-        binding.kategoriler.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+        binding.kategoriler.layoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         binding.kategoriler.adapter = katAdapter
 
         mAdapter = menuAdapter(ArrayList(), { urun, artis ->
@@ -179,7 +228,14 @@ class menulerFragment : Fragment() {
                 urun.kategori?.let { benzersizKategoriler.add(it) }
             }
             kategoriListesi.clear()
-            benzersizKategoriler.forEach { kategoriListesi.add(kategori(isim = it, gorselUrl = "")) }
+            benzersizKategoriler.forEach {
+                kategoriListesi.add(
+                    kategori(
+                        isim = it,
+                        gorselUrl = ""
+                    )
+                )
+            }
             katAdapter.notifyDataSetChanged()
             if (kategoriListesi.isNotEmpty()) urunleriFiltrele(kategoriListesi[0].isim)
             else mAdapter.updateList(tumUrunlerYedek)
@@ -199,17 +255,28 @@ class menulerFragment : Fragment() {
         siparisAdetListener = db.collection("AktifSiparisler").document(aktifMasaAdi)
             .collection("Siparisler").addSnapshotListener { snapshot, _ ->
                 if (_binding == null) return@addSnapshotListener
+
                 val adetMap = mutableMapOf<String, Int>()
-                var toplam = 0.0
-                val sp = requireActivity().getSharedPreferences("UygulamaAyarlari", Context.MODE_PRIVATE)
-                val birim = sp.getString("paraBirimi", "₺") ?: "₺"
+                var toplamTl = 0.0
+
+                val sharedPref =
+                    requireActivity().getSharedPreferences("UygulamaAyarlari", Context.MODE_PRIVATE)
+                val birim = sharedPref.getString("paraBirimi", "₺") ?: "₺"
+                val kur = kurlar[birim] ?: 1.0
+
                 snapshot?.forEach { doc ->
                     val ad = doc.getString("urunAdi") ?: ""
                     val f = doc.getDouble("fiyat") ?: 0.0
                     adetMap[ad] = (adetMap[ad] ?: 0) + 1
-                    toplam += f
+                    toplamTl += f
                 }
-                binding.ToplamTutar.text = getString(R.string.toplam_tutar, String.format("%.2f", toplam), birim)
+                val donusturulmusToplam = toplamTl / kur
+                binding.ToplamTutar.text = getString(
+                    R.string.toplam_tutar,
+                    String.format("%.2f", donusturulmusToplam),
+                    birim
+                )
+
                 mAdapter.updateAdetler(adetMap)
             }
     }

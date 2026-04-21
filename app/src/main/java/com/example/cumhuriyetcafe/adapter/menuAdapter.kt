@@ -6,12 +6,20 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.cumhuriyetcafe.dataClass.urunler
 import com.example.cumhuriyetcafe.databinding.MenuRecyclerViewBinding
+
 class menuAdapter(
     private var urunListesi: ArrayList<urunler>,
     private val onUrunDegisti: (urun: urunler, isArtis: Boolean) -> Unit
 ) : RecyclerView.Adapter<menuAdapter.MenuViewHolder>() {
 
     private var urunAdetleri = mutableMapOf<String, Int>()
+
+    private val kurlar = mapOf(
+        "$" to 44.89,
+        "€" to 52.91,
+        "CH" to 57.60,
+        "£" to 60.79
+    )
 
     class MenuViewHolder(val binding: MenuRecyclerViewBinding) : RecyclerView.ViewHolder(binding.root)
 
@@ -26,9 +34,13 @@ class menuAdapter(
         val adet = urunAdetleri[urunAdi] ?: 0
         val sharedPref = holder.itemView.context.getSharedPreferences("UygulamaAyarlari", Context.MODE_PRIVATE)
         val birim = sharedPref.getString("paraBirimi", "₺") ?: "₺"
+        val kur = kurlar[birim] ?: 1.0
+        val anaFiyatTl = currentUrun.fiyat ?: 0.0
+        val donusturulmusFiyat = anaFiyatTl / kur
+
         holder.binding.apply {
             urununIsmi.text = urunAdi
-            urununFiyati.text = String.format("%.2f %s", currentUrun.fiyat, birim)
+            urununFiyati.text = String.format("%.2f %s", donusturulmusFiyat, birim)
             urununAdedi.text = adet.toString()
 
             buttonArti.setOnClickListener { onUrunDegisti(currentUrun, true) }

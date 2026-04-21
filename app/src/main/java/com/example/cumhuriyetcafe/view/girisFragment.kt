@@ -28,26 +28,35 @@ class girisFragment : Fragment() {
     private lateinit var auth: FirebaseAuth
     private lateinit var googleSignInClient: GoogleSignInClient
 
-    private val googleSignInLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
-        try {
-            val account = task.getResult(ApiException::class.java)!!
-            val credential = GoogleAuthProvider.getCredential(account.idToken!!, null)
+    private val googleSignInLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+            try {
+                val account = task.getResult(ApiException::class.java)!!
+                val credential = GoogleAuthProvider.getCredential(account.idToken!!, null)
 
-            auth.signInWithCredential(credential).addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    val user = auth.currentUser
-                    user?.let { guncelProfilFotografi(it) }
-                    girisiKaydet()
-                    masalaraGit()
+                auth.signInWithCredential(credential).addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        val user = auth.currentUser
+                        user?.let { guncelProfilFotografi(it) }
+                        girisiKaydet()
+                        masalaraGit()
+                    }
                 }
+            } catch (e: Exception) {
+                if (isAdded) Toast.makeText(
+                    requireContext(),
+                    "Google Giriş Hatası",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
-        } catch (e: Exception) {
-            if (isAdded) Toast.makeText(requireContext(), "Google Giriş Hatası", Toast.LENGTH_SHORT).show()
         }
-    }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         _binding = FragmentGirisBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -56,7 +65,6 @@ class girisFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         auth = FirebaseAuth.getInstance()
-
         val sharedPref = requireActivity().getSharedPreferences("TemaAyari", Context.MODE_PRIVATE)
         if (auth.currentUser != null && sharedPref.getBoolean("isLoggedIn", false)) {
             masalaraGit()
@@ -70,11 +78,12 @@ class girisFragment : Fragment() {
             .requestEmail()
             .build()
         googleSignInClient = GoogleSignIn.getClient(requireActivity(), gso)
-
         binding.girisLinearLayout.setOnClickListener {
             googleSignInLauncher.launch(googleSignInClient.signInIntent)
         }
-
+        binding.textView.setOnClickListener {
+            googleSignInLauncher.launch(googleSignInClient.signInIntent)
+        }
         binding.girisButton.setOnClickListener {
             val email = binding.eMailText.text.toString().trim()
             val sifre = binding.editTextSifre.text.toString().trim()
@@ -83,8 +92,17 @@ class girisFragment : Fragment() {
                     if (task.isSuccessful) {
                         girisiKaydet()
                         masalaraGit()
+                    } else {
+                        Toast.makeText(
+                            requireContext(),
+                            "Giriş Başarısız: ${task.exception?.message}",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 }
+            } else {
+                Toast.makeText(requireContext(), "Lütfen tüm alanları doldurun", Toast.LENGTH_SHORT)
+                    .show()
             }
         }
     }
@@ -106,6 +124,7 @@ class girisFragment : Fragment() {
             googleSimgesiYap()
         }
     }
+
     private fun googleSimgesiYap() {
         binding.imageView.apply {
             setPadding(15, 15, 15, 15)

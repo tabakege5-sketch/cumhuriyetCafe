@@ -20,6 +20,12 @@ class ciroRaporFragment : Fragment() {
     private lateinit var dbRef: DatabaseReference
     private lateinit var adapter: ciroAdapter
     private var ciroListesi = ArrayList<ciroKayit>()
+    private val kurlar = mapOf(
+        "$" to 44.89,
+        "€" to 52.91,
+        "CH" to 57.60,
+        "£" to 60.79
+    )
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -40,20 +46,14 @@ class ciroRaporFragment : Fragment() {
         binding.kalanRecyclerViewCiro.layoutManager = LinearLayoutManager(context)
         binding.kalanRecyclerViewCiro.adapter = adapter
 
-        binding.gelirHesapla.setOnClickListener {
-            verileriHesaplaVeGoster()
-            if (bildirimIzniVarMi()) {
-                Toast.makeText(requireContext(), "Gelirler güncellendi", Toast.LENGTH_SHORT).show()
-            }
-        }
-        binding.ciroHesapla.setOnClickListener {
-            verileriHesaplaVeGoster()
-            if (bildirimIzniVarMi()) {
-                Toast.makeText(requireContext(), "Ciro verileri güncellendi", Toast.LENGTH_SHORT)
-                    .show()
-            }
-        }
+        binding.gelirHesapla.setOnClickListener { verileriHesaplaVeGoster(); bildirimAt("Gelirler güncellendi") }
+        binding.ciroHesapla.setOnClickListener { verileriHesaplaVeGoster(); bildirimAt("Ciro verileri güncellendi") }
+
         verileriHesaplaVeGoster()
+    }
+
+    private fun bildirimAt(mesaj: String) {
+        if (bildirimIzniVarMi()) Toast.makeText(requireContext(), mesaj, Toast.LENGTH_SHORT).show()
     }
 
     private fun bildirimIzniVarMi(): Boolean {
@@ -66,12 +66,6 @@ class ciroRaporFragment : Fragment() {
         val sharedPref =
             requireActivity().getSharedPreferences("UygulamaAyarlari", Context.MODE_PRIVATE)
         val guncelBirim = sharedPref.getString("paraBirimi", "₺") ?: "₺"
-        val kurlar = mapOf(
-            "$" to 44.75,
-            "€" to 52.77,
-            "CH" to 57.31,
-            "£" to 60.66 //İngiliz Sterlini
-        )
 
         dbRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -94,18 +88,20 @@ class ciroRaporFragment : Fragment() {
                     val hesaplanmisGelir = toplamGelirTL / secilenKur
                     val hesaplanmisGider = toplamGiderTL / secilenKur
                     val netCiro = hesaplanmisGelir - hesaplanmisGider
-                    binding.textGunlukGelirHesaplamaView.text =
-                        "Günlük Gelir: ${String.format("%.2f", hesaplanmisGelir)} $guncelBirim"
-                    binding.textGunlukGiderHesaplamaView.text =
-                        "Günlük Gider: ${String.format("%.2f", hesaplanmisGider)} $guncelBirim"
-                    binding.textGunlukCiroHesaplamaView.text =
-                        "Günlük Ciro: ${String.format("%.2f", netCiro)} $guncelBirim"
-                    binding.textToplamCiroHesaplamaView.text =
-                        "Toplam Ciro: ${String.format("%.2f", netCiro)} $guncelBirim"
-                    binding.sonucTextView.text =
-                        "Net Kalan: ${String.format("%.2f", netCiro)} $guncelBirim"
-                    val guncelListe = ArrayList(ciroListesi.reversed())
-                    adapter.verileriGuncelle(guncelListe)
+
+                    binding.apply {
+                        textGunlukGelirHesaplamaView.text =
+                            "Günlük Gelir: ${paraFormatla(hesaplanmisGelir, guncelBirim)}"
+                        textGunlukGiderHesaplamaView.text =
+                            "Günlük Gider: ${paraFormatla(hesaplanmisGider, guncelBirim)}"
+                        textGunlukCiroHesaplamaView.text =
+                            "Günlük Ciro: ${paraFormatla(netCiro, guncelBirim)}"
+                        textToplamCiroHesaplamaView.text =
+                            "Toplam Ciro: ${paraFormatla(netCiro, guncelBirim)}"
+                        sonucTextView.text = "Net Kalan: ${paraFormatla(netCiro, guncelBirim)}"
+                    }
+
+                    adapter.verileriGuncelle(ArrayList(ciroListesi.reversed()))
                 }
             }
 
@@ -116,6 +112,10 @@ class ciroRaporFragment : Fragment() {
                 }
             }
         })
+    }
+
+    private fun paraFormatla(miktar: Double, birim: String): String {
+        return "${String.format("%.2f", miktar)} $birim"
     }
 
     override fun onDestroyView() {
