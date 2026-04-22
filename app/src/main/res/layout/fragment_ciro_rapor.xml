@@ -2,6 +2,7 @@
 <ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true">
@@ -165,7 +166,8 @@
             android:layout_marginTop="17dp"
             android:text="Satılan Ürünler Listesi"
             android:textSize="18sp"
-            app:layout_constraintTop_toBottomOf="@id/sonucTextView" />
+            app:layout_constraintTop_toBottomOf="@id/sonucTextView"
+            tools:ignore="MissingConstraints" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/kalanRecyclerViewCiro"
