@@ -37,10 +37,10 @@ class menulerFragment : Fragment() {
         "https://cumhuriyetcafe-fb26c-default-rtdb.europe-west1.firebasedatabase.app"
 
     private val kurlar = mapOf(
-        "$" to 45.03,
-        "€" to 52.82,
-        "CH" to 57.38,
-        "£" to 60.97
+        "$" to 46.32,
+        "€" to 53.94,
+        "CH" to 58.66,
+        "£" to 62.32
     )
 
     private fun bildirimIzniVarMi(): Boolean {

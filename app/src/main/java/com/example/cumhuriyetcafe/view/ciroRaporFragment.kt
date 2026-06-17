@@ -21,10 +21,10 @@ class ciroRaporFragment : Fragment() {
     private lateinit var adapter: ciroAdapter
     private var ciroListesi = ArrayList<ciroKayit>()
     private val kurlar = mapOf(
-        "$" to 44.89,
-        "€" to 52.91,
-        "CH" to 57.60,
-        "£" to 60.79
+        "$" to 46.32,
+        "€" to 53.94,
+        "CH" to 58.66,
+        "£" to 62.32
     )
 
     override fun onCreateView(
